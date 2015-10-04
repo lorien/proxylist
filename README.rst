@@ -31,7 +31,16 @@ Usage Example
 
 .. code:: python
 
-    # TODO
+    >>> from proxylist import ProxyList
+    >>> pl = ProxyList()
+    >>> pl.load_file('/web/proxy.txt')
+    >>> pl.random()
+    <proxylist.base.Proxy object at 0x7f1882d599e8>
+    >>> pl.random().address()
+    '1.1.1.1:8085'
+    >>> len(pl)
+    1000
+
 
 
 Installation

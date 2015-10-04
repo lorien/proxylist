@@ -5,7 +5,7 @@ ROOT = os.path.dirname(os.path.realpath(__file__))
 
 setup(
     name='proxylist',
-    version='0.1.1',
+    version='0.1.2',
     description='Managing list of proxies',
     long_description=open(os.path.join(ROOT, 'README.rst')).read(),
     packages=find_packages(exclude=['script']),

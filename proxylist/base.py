@@ -40,7 +40,7 @@ class Proxy(object):
 
     def get_address(self):
         # TODO: deprecation warning
-        return self.address
+        return self.address()
 
     def userpwd(self):
         if self.username:
@@ -134,8 +134,6 @@ def parse_raw_list_data(data, proxy_type='http', proxy_userpwd=None,
         yield proxy
 
 
-
-
 class BaseProxySource(object):
     def __init__(self, proxy_type='http', proxy_userpwd=None,
                  item_format=None, **kwargs):
@@ -202,10 +200,23 @@ class ProxyList(object):
     Class to work with proxy list.
     """
 
-    def __init__(self, source=None):
+    def __init__(self, source=None, from_file=None, from_url=None, meta=None):
+        """
+        Creates ProxyList object and optionally initialize proxy source.
+
+        Only one arg of (source, from_file, from_url)
+        could be defined
+        """
+        assert sum(1 for x in (source, from_file, from_url)
+                   if x is not None) <= 1
+        if from_file:
+            source = FileProxySource(from_file)
+        elif from_url:
+            source = WebProxySource(from_url)
         self._source = source
         self._list = []
         self._list_iter = None
+        self.meta = meta or {}
 
     def set_source(self, source):
         "Set the proxy source and use it to load proxy list"

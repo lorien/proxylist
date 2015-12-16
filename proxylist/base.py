@@ -136,22 +136,26 @@ def parse_raw_list_data(data, proxy_type='http', proxy_userpwd=None,
 
 class BaseProxySource(object):
     def __init__(self, proxy_type='http', proxy_userpwd=None,
-                 item_format=None, **kwargs):
+                 item_format=None, filter_callback=None, **kwargs):
         self.proxy_type = proxy_type
         self.item_format = item_format
         self.proxy_userpwd = proxy_userpwd
+        if filter_callback is not None:
+            self.filter_callback = filter_callback
+        else:
+            self.filter_callback = lambda x: True
 
     def load_raw_data(self):
         raise NotImplementedError
 
     def load(self):
         data = self.load_raw_data()
-        return list(parse_raw_list_data(
+        return list(filter(self.filter_callback, parse_raw_list_data(
             data,
             proxy_type=self.proxy_type,
             proxy_userpwd=self.proxy_userpwd,
             item_format=self.item_format,
-        ))
+        )))
 
 
 class FileProxySource(BaseProxySource):
@@ -213,15 +217,17 @@ class ProxyList(object):
             source = FileProxySource(from_file)
         elif from_url:
             source = WebProxySource(from_url)
-        self._source = source
-        self._list = []
-        self._list_iter = None
+        self.set_source(source)
         self.meta = meta or {}
 
     def set_source(self, source):
         "Set the proxy source and use it to load proxy list"
         self._source = source
-        self.load()
+        if source:
+            self.load()
+        else:
+            self._list = []
+            self._list_iter = None
 
     def load_file(self, path, **kwargs):
         "Load proxy list from file"

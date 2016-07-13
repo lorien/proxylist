@@ -36,7 +36,6 @@ class ProxyListTestCase(TestCase):
         pl = ProxyList()
         self.assertEqual(0, pl.size())
 
-
     def test_file_proxy_source(self):
         pl = ProxyList()
         path = self.generate_plist_file(DEFAULT_PROXY_LIST_DATA)
@@ -54,11 +53,11 @@ class ProxyListTestCase(TestCase):
         pl = ProxyList()
         path = self.generate_plist_file('foo:1\nbar:1')
         pl.load_file(path)
-        self.assertEqual(pl.get_next_proxy().host, 'foo')
-        self.assertEqual(pl.get_next_proxy().host, 'bar')
-        self.assertEqual(pl.get_next_proxy().host, 'foo')
+        self.assertEqual(pl.next().host, 'foo')
+        self.assertEqual(pl.next().host, 'bar')
+        self.assertEqual(pl.next().host, 'foo')
         pl.load_file(path)
-        self.assertEqual(pl.get_next_proxy().host, 'foo')
+        self.assertEqual(pl.next().host, 'foo')
         os.unlink(path)
 
 

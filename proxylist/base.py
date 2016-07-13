@@ -8,6 +8,7 @@ import logging
 from random import randint
 import six
 from six.moves.urllib.request import urlopen
+import warnings
 
 __all__ = ('Proxy', 'InvalidProxyLine', 'FileProxySource',
            'WebProxySource', 'ListProxySource', 'ProxyList')
@@ -15,6 +16,7 @@ RE_SIMPLE_PROXY = re.compile(r'^([^:]+):([^:]+)$')
 RE_AUTH_PROXY = re.compile(r'^([^:]+):([^:]+):([^:]+):([^:]+)$')
 PROXY_STANDARD_ATTRS = ('host', 'port', 'username', 'password')
 logger = logging.getLogger('proxylist')
+
 
 class Proxy(object):
     __slots__ = ('host', 'port', 'username', 'password',
@@ -39,7 +41,8 @@ class Proxy(object):
         return '%s:%s' % (self.host, self.port)
 
     def get_address(self):
-        # TODO: deprecation warning
+        warnings.warn('Function `proxy_list::get_address` is deprecated'
+                      ' Use `proxy_list::address` instead')
         return self.address()
 
     def userpwd(self):
@@ -47,7 +50,6 @@ class Proxy(object):
             return '%s:%s' % (self.username, self.password or '')
         else:
             return None
-
 
 
 class ProxyListError(Exception):
@@ -160,6 +162,7 @@ class BaseProxySource(object):
 
 class FileProxySource(BaseProxySource):
     "Proxy source that loads list from the file"
+
     def __init__(self, path, **kwargs):
         self.path = path
         super(FileProxySource, self).__init__(**kwargs)
@@ -171,6 +174,7 @@ class FileProxySource(BaseProxySource):
 
 class WebProxySource(BaseProxySource):
     "Proxy source that loads list from web resource"
+
     def __init__(self, url, timeout=5, try_count=3, **kwargs):
         self.url = url
         self.timeout = timeout
@@ -181,7 +185,7 @@ class WebProxySource(BaseProxySource):
         for count in range(self.try_count):
             try:
                 data = urlopen(url=self.url, timeout=self.timeout).read()
-            except Exception as ex: # TODO: more specific exceptions
+            except Exception as ex:  # TODO: more specific exceptions
                 if count >= (self.try_count - 1):
                     raise
             else:
@@ -191,6 +195,7 @@ class WebProxySource(BaseProxySource):
 class ListProxySource(BaseProxySource):
     """That proxy source that loads list from
     python list of strings"""
+
     def __init__(self, items, **kwargs):
         self.items = items
         super(ListProxySource, self).__init__(**kwargs)
@@ -272,10 +277,12 @@ class ProxyList(object):
 
     def get_next_proxy(self):
         "Return next proxy"
-        # TODO: deprecation warning
+        warnings.warn('Function `proxy_list::get_next_proxy` is deprecated'
+                      ' Use `proxy_list::next` instead')
         return self.next()
 
     def get_random_proxy(self):
         "Return random proxy"
-        # TODO: deprecation warning
+        warnings.warn('Function `proxy_list::get_random_proxy` is deprecated'
+                      ' Use `proxy_list::random` instead')
         return self.random()

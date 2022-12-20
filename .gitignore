@@ -20,3 +20,4 @@ pip-log.txt
 /dist/
 /build/
 /.coverage
+/docs/_build

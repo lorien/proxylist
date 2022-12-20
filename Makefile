@@ -1,4 +1,4 @@
-.PHONY: bootstrap venv deps dirs clean pytest test release mypy pylint flake8 bandit check build coverage
+.PHONY: bootstrap venv deps dirs clean pytest test release mypy pylint flake8 bandit check build coverage docs
 
 FILES_CHECK_MYPY = proxylist tests
 FILES_CHECK_ALL = $(FILES_CHECK_MYPY)
@@ -63,6 +63,9 @@ build:
 	rm -rf dist/*
 	python -m build --sdist
 
-
 coverage:
 	pytest --cov proxylist --cov-report term-missing
+
+docs:
+	rm -rf docs/_build/html 
+	sphinx-build -j auto docs docs/_build/html

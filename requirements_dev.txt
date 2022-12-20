@@ -10,6 +10,13 @@ runscript
 coverage
 pytest-cov
 
+# docs
+sphinx
+myst-nb
+sphinx_rtd_theme
+sphinx-autoapi
+
+
 # Code Quality
 bandit[toml]
 flake8

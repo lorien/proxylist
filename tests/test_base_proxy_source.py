@@ -1,6 +1,8 @@
 import pytest
 
-from proxylist.base import BaseProxySource, InvalidProxyLine, ProxyServer
+from proxylist.errors import InvalidProxyLine
+from proxylist.server import ProxyServer
+from proxylist.source import BaseProxySource
 
 
 class CustomProxySource(BaseProxySource):
@@ -43,7 +45,7 @@ def test_parse_raw_list_data_defined_userpwd() -> None:
         CustomProxySource().parse_raw_list_data(
             "invalid-line\nfoo:88\nbar:99:user:pwd",
             proxy_type="socks5",
-            proxy_userpwd="xuser:xpwd",
+            proxy_auth=("xuser", "xpwd"),
         )
     )
     assert items[0] == ProxyServer("foo", 88, "xuser", "xpwd", "socks5")

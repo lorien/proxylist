@@ -5,7 +5,7 @@ from unittest import TestCase
 from test_server import Response, TestServer
 
 from proxylist import ProxyList
-from proxylist.main import ListProxySource
+from proxylist.source import ListProxySource
 
 DEFAULT_PROXY_LIST_DATA = b"""
 '1.1.1.1:8080

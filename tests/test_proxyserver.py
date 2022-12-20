@@ -1,4 +1,4 @@
-from proxylist.base import ProxyServer
+from proxylist.server import ProxyServer
 
 
 def test_get_address() -> None:

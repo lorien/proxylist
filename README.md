@@ -12,6 +12,7 @@ The proxylist package provides function and classes for:
 - loading list of proxy servers from different sources like local file or network location
 - rotating proxy servers or picking them randomly
 
+Feel free to give feedback in Telegram groups: [@grablab](https://t.me/grablab) and [@grablab\_ru](https://t.me/grablab_ru).
 
 ## Usage Example
 
@@ -34,11 +35,3 @@ Run: `pip install -U proxylist`
 ## Documentation
 
 Documentation is available at http://proxylist.readthedocs.org
-
-
-
-## Community
-
-Telegram English chat: [https://t.me/grablab](https://t.me/grablab)
-
-Telegram Russian chat: [https://t.me/grablab\_ru](https://t.me/grablab_ru)

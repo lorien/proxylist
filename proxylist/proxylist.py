@@ -3,16 +3,19 @@ from __future__ import annotations
 import itertools
 import logging
 from collections.abc import Iterator, Sequence
-from secrets import SystemRandom, choice
+from secrets import choice
 from typing import Any
 
 from .server import ProxyServer
-from .source import BaseProxySource, FileProxySource, ListProxySource, WebProxySource
+from .source import (
+    BaseProxySource,
+    LinesListProxySource,
+    LocalFileProxySource,
+    NetworkFileProxySource,
+)
 
 __all__ = ["ProxyList"]
-# PROXY_FIELDS = ("host", "port", "username", "password", "proxy_type")
 logger = logging.getLogger(__file__)
-system_random = SystemRandom()
 
 
 class ProxyList:
@@ -20,49 +23,49 @@ class ProxyList:
 
     def __init__(self, source: BaseProxySource) -> None:
         self._source = source
-        self._proxy_items: list[ProxyServer] = []
-        self._proxy_items_iter: Iterator[ProxyServer] = iter(self._proxy_items)
+        self._servers_list: list[ProxyServer] = []
+        self._servers_list_iter: Iterator[ProxyServer] = iter(self._servers_list)
         self.load()
 
     @classmethod
-    def create_from_file(cls, path: str, **kwargs: Any) -> ProxyList:
+    def from_local_file(cls, path: str, **kwargs: Any) -> ProxyList:
         """Create proxy list from file."""
-        return ProxyList(FileProxySource(path, **kwargs))
+        return ProxyList(LocalFileProxySource(path, **kwargs))
 
     @classmethod
-    def create_from_url(cls, url: str, **kwargs: Any) -> ProxyList:
+    def from_network_file(cls, url: str, **kwargs: Any) -> ProxyList:
         """Create proxy list from network document."""
-        return ProxyList(WebProxySource(url, **kwargs))
+        return ProxyList(NetworkFileProxySource(url, **kwargs))
 
     @classmethod
-    def create_from_list(cls, items: Sequence[str], **kwargs: Any) -> ProxyList:
+    def from_lines_list(cls, items: Sequence[str], **kwargs: Any) -> ProxyList:
         """Create proxy list from list of strings."""
-        return ProxyList(ListProxySource(items, **kwargs))
+        return ProxyList(LinesListProxySource(items, **kwargs))
 
     def load(self) -> None:
         """Load proxy list from configured proxy source."""
         assert self._source is not None
-        self._proxy_items = self._source.load()
-        self._proxy_items_iter = itertools.cycle(self._proxy_items)
+        self._servers_list = self._source.get_servers_list()
+        self._servers_list_iter = itertools.cycle(self._servers_list)
 
     def get_random_server(self) -> ProxyServer:
         """Return random server."""
-        return choice(self._proxy_items)
+        return choice(self._servers_list)
 
     def get_next_server(self) -> ProxyServer:
         """Return next server."""
         # pylint: disable=deprecated-typing-alias
-        return next(self._proxy_items_iter)
+        return next(self._servers_list_iter)
 
     def size(self) -> int:
         """Return number of proxies in the list."""
-        return len(self._proxy_items)
+        return len(self._servers_list)
 
     def __iter__(self) -> Iterator[ProxyServer]:
-        return iter(self._proxy_items)
+        return iter(self._servers_list)
 
     def __len__(self) -> int:
-        return len(self._proxy_items)
+        return len(self._servers_list)
 
     def __getitem__(self, key: int) -> ProxyServer:
-        return self._proxy_items[key]
+        return self._servers_list[key]

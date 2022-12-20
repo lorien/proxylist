@@ -8,60 +8,58 @@ from typing import IO, Any, cast
 from urllib.error import URLError
 from urllib.request import urlopen
 
-from .base import BaseProxyListParser
+from .base import BaseProxySource
 from .errors import ProxySourceReadError
-from .parser import ProxyListParser
+from .parser import parse_servers_from_text
 from .server import ProxyServer
 
 logger = logging.getLogger(__file__)
 __all__ = ["BaseProxySource"]
 
 
-class BaseProxySource:
+class BaseFileProxySource(BaseProxySource):
     def __init__(
         self,
         proxy_type: None | str = None,
         proxy_auth: None | tuple[str, str] = None,
-        parser: None | BaseProxyListParser = None,
     ) -> None:
         self._default_proxy_type = proxy_type
         self._default_proxy_auth = proxy_auth
-        self.parser = parser or ProxyListParser()
 
     @abstractmethod
-    def load_raw_data(self) -> str:  # pragma: no cover
+    def load_content(self) -> str:  # pragma: no cover
         raise NotImplementedError
 
-    def load(self) -> list[ProxyServer]:
+    def get_servers_list(self) -> list[ProxyServer]:
         return list(
-            self.parser.parse_raw_list_data(
-                self.load_raw_data(),
+            parse_servers_from_text(
+                self.load_content(),
                 proxy_type=self._default_proxy_type,
                 proxy_auth=self._default_proxy_auth,
             )
         )
 
 
-class FileProxySource(BaseProxySource):
+class LocalFileProxySource(BaseFileProxySource):
     """Load list from the file."""
 
     def __init__(self, path: str, **kwargs: Any) -> None:
         self.path = path
         super().__init__(**kwargs)
 
-    def load_raw_data(self) -> str:
+    def load_content(self) -> str:
         with open(self.path, encoding="utf-8") as inp:
             return inp.read()
 
 
-class WebProxySource(BaseProxySource):
+class NetworkFileProxySource(BaseFileProxySource):
     """Load list from web resource."""
 
     def __init__(self, url: str, **kwargs: Any) -> None:
         self.url = url
         super().__init__(**kwargs)
 
-    def load_raw_data(self) -> str:
+    def load_content(self) -> str:
         recent_err = None
         for _ in range(3):
             try:
@@ -77,12 +75,12 @@ class WebProxySource(BaseProxySource):
         ) from recent_err
 
 
-class ListProxySource(BaseProxySource):
+class LinesListProxySource(BaseFileProxySource):
     """Load list from python list of strings."""
 
-    def __init__(self, items: Sequence[str], **kwargs: Any) -> None:
-        self.items = items
+    def __init__(self, lines: Sequence[str], **kwargs: Any) -> None:
+        self._lines = lines
         super().__init__(**kwargs)
 
-    def load_raw_data(self) -> str:
-        return "\n".join(self.items)
+    def load_content(self) -> str:
+        return "\n".join(self._lines)

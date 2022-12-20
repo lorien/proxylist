@@ -4,7 +4,7 @@ import pytest
 from test_server import Response, TestServer
 
 from proxylist.errors import ProxySourceReadError
-from proxylist.source import WebProxySource
+from proxylist.source import NetworkFileProxySource
 
 
 def test_url_error() -> None:
@@ -15,6 +15,6 @@ def test_url_error() -> None:
             Response(raw_callback=lambda: b"You shall not pass!"), count=10
         )
         with pytest.raises(ProxySourceReadError):
-            WebProxySource(serv.get_url()).load_raw_data()
+            NetworkFileProxySource(serv.get_url()).load_content()
     finally:
         serv.stop()

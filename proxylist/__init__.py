@@ -1,12 +1,12 @@
 from .proxylist import ProxyList
 from .server import ProxyServer
-from .source import FileProxySource, ListProxySource, WebProxySource
+from .source import LinesListProxySource, LocalFileProxySource, NetworkFileProxySource
 
 __all__ = [
     "ProxyList",
     "ProxyServer",
-    "FileProxySource",
-    "WebProxySource",
-    "ListProxySource",
+    "LocalFileProxySource",
+    "NetworkFileProxySource",
+    "LinesListProxySource",
 ]
 __version__ = "0.1.4"

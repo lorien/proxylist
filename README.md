@@ -18,7 +18,7 @@ Feel free to give feedback in Telegram groups: [@grablab](https://t.me/grablab) 
 
 ```
 >>> from proxylist import ProxyList
->>> pl = ProxyList.create_from_file('var/proxy.txt')
+>>> pl = ProxyList.from_local_file('var/proxy.txt')
 >>> pl.get_random_server()
 <proxylist.server.ProxyServer object at 0x7f1882d599e8>
 >>> pl.get_random_server().address()

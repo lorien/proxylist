@@ -4,7 +4,7 @@ import logging
 from abc import abstractmethod
 from collections.abc import Sequence
 from http.client import HTTPException
-from typing import IO, Any, cast
+from typing import IO, cast
 from urllib.error import URLError
 from urllib.request import urlopen
 
@@ -20,6 +20,7 @@ __all__ = ["BaseProxySource"]
 class BaseFileProxySource(BaseProxySource):
     def __init__(
         self,
+        *,
         proxy_type: None | str = None,
         proxy_auth: None | tuple[str, str] = None,
     ) -> None:
@@ -43,9 +44,16 @@ class BaseFileProxySource(BaseProxySource):
 class LocalFileProxySource(BaseFileProxySource):
     """Load list from the file."""
 
-    def __init__(self, path: str, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        path: str,
+        /,
+        *,
+        proxy_type: None | str = None,
+        proxy_auth: None | tuple[str, str] = None,
+    ) -> None:
         self.path = path
-        super().__init__(**kwargs)
+        super().__init__(proxy_type=proxy_type, proxy_auth=proxy_auth)
 
     def load_content(self) -> str:
         with open(self.path, encoding="utf-8") as inp:
@@ -55,9 +63,16 @@ class LocalFileProxySource(BaseFileProxySource):
 class NetworkFileProxySource(BaseFileProxySource):
     """Load list from web resource."""
 
-    def __init__(self, url: str, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        url: str,
+        /,
+        *,
+        proxy_type: None | str = None,
+        proxy_auth: None | tuple[str, str] = None,
+    ) -> None:
         self.url = url
-        super().__init__(**kwargs)
+        super().__init__(proxy_type=proxy_type, proxy_auth=proxy_auth)
 
     def load_content(self) -> str:
         recent_err = None
@@ -78,9 +93,16 @@ class NetworkFileProxySource(BaseFileProxySource):
 class LinesListProxySource(BaseFileProxySource):
     """Load list from python list of strings."""
 
-    def __init__(self, lines: Sequence[str], **kwargs: Any) -> None:
+    def __init__(
+        self,
+        lines: Sequence[str],
+        /,
+        *,
+        proxy_type: None | str = None,
+        proxy_auth: None | tuple[str, str] = None,
+    ) -> None:
         self._lines = lines
-        super().__init__(**kwargs)
+        super().__init__(proxy_type=proxy_type, proxy_auth=proxy_auth)
 
     def load_content(self) -> str:
         return "\n".join(self._lines)

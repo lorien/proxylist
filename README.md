@@ -17,11 +17,10 @@ The proxylist package provides function and classes for:
 
 ```
 >>> from proxylist import ProxyList
->>> pl = ProxyList()
->>> pl.load_file('var/proxy.txt')
->>> pl.random()
-<proxylist.base.Proxy object at 0x7f1882d599e8>
->>> pl.random().address()
+>>> pl = ProxyList.create_from_file('var/proxy.txt')
+>>> pl.get_random_server()
+<proxylist.server.ProxyServer object at 0x7f1882d599e8>
+>>> pl.get_random_server().address()
 '1.1.1.1:8085'
 >>> len(pl)
 1000

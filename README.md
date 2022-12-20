@@ -14,6 +14,15 @@ The proxylist package provides function and classes for:
 
 Feel free to give feedback in Telegram groups: [@grablab](https://t.me/grablab) and [@grablab\_ru](https://t.me/grablab_ru).
 
+## Installation
+
+Run: `pip install -U proxylist`
+
+
+## Documentation
+
+Documentation is available at https://proxylist.readthedocs.io
+
 ## Usage Example
 
 ```
@@ -26,12 +35,3 @@ Feel free to give feedback in Telegram groups: [@grablab](https://t.me/grablab) 
 >>> len(pl)
 1000
 ```
-
-## Installation
-
-Run: `pip install -U proxylist`
-
-
-## Documentation
-
-Documentation is available at http://proxylist.readthedocs.org

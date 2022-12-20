@@ -29,6 +29,7 @@ classifiers = [
 dependencies = []
 
 [project.urls]
+homepage = "http://github.com/lorien/proxylist"
 
 [build-system]
 requires = ["setuptools"]

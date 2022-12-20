@@ -1,21 +1,16 @@
 import pytest
 
 from proxylist.errors import InvalidProxyLine
+from proxylist.parser import ProxyListParser
 from proxylist.server import ProxyServer
-from proxylist.source import BaseProxySource
 
 
-class CustomProxySource(BaseProxySource):
-    def load_raw_data(self) -> str:
-        return ""
-
-
-def test_parse_proxy_line_common() -> None:
-    assert CustomProxySource().parse_proxy_line("foo:88") == ("foo", 88, None, None)
+def test_parse_proxy_line_basic() -> None:
+    assert ProxyListParser.parse_proxy_line("foo:88") == ("foo", 88, None, None)
 
 
 def test_parse_proxy_line_userpwd() -> None:
-    assert CustomProxySource().parse_proxy_line("foo:88:user:pwd") == (
+    assert ProxyListParser.parse_proxy_line("foo:88:user:pwd") == (
         "foo",
         88,
         "user",
@@ -25,12 +20,12 @@ def test_parse_proxy_line_userpwd() -> None:
 
 def test_parse_proxy_line_invlalid() -> None:
     with pytest.raises(InvalidProxyLine):
-        CustomProxySource().parse_proxy_line("zzz")
+        ProxyListParser.parse_proxy_line("zzz")
 
 
 def test_parse_raw_list_data() -> None:
     items = list(
-        CustomProxySource().parse_raw_list_data(
+        ProxyListParser.parse_raw_list_data(
             "invalid-line\nfoo:88\nbar:99:user:pwd",
             proxy_type="socks5",
             # proxy_userpwd="xuser:xpwd",
@@ -42,7 +37,7 @@ def test_parse_raw_list_data() -> None:
 
 def test_parse_raw_list_data_defined_userpwd() -> None:
     items = list(
-        CustomProxySource().parse_raw_list_data(
+        ProxyListParser.parse_raw_list_data(
             "invalid-line\nfoo:88\nbar:99:user:pwd",
             proxy_type="socks5",
             proxy_auth=("xuser", "xpwd"),

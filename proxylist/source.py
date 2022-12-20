@@ -1,18 +1,18 @@
 from __future__ import annotations
 
 import logging
-import re
 from abc import abstractmethod
-from collections.abc import Iterator, Sequence
+from collections.abc import Sequence
+from http.client import HTTPException
 from typing import IO, Any, cast
 from urllib.error import URLError
 from urllib.request import urlopen
 
-from .errors import InvalidProxyLine
+from .base import BaseProxyListParser
+from .errors import ProxySourceReadError
+from .parser import ProxyListParser
 from .server import ProxyServer
 
-RE_SIMPLE_PROXY = re.compile(r"^([^:]+):(\d+)$")
-RE_AUTH_PROXY = re.compile(r"^([^:]+):(\d+):([^:]+):([^:]+)$")
 logger = logging.getLogger(__file__)
 __all__ = ["BaseProxySource"]
 
@@ -22,55 +22,19 @@ class BaseProxySource:
         self,
         proxy_type: None | str = None,
         proxy_auth: None | tuple[str, str] = None,
+        parser: None | BaseProxyListParser = None,
     ) -> None:
         self._default_proxy_type = proxy_type
         self._default_proxy_auth = proxy_auth
+        self.parser = parser or ProxyListParser()
 
     @abstractmethod
     def load_raw_data(self) -> str:  # pragma: no cover
         raise NotImplementedError
 
-    def parse_proxy_line(self, line: str) -> tuple[str, int, None | str, None | str]:
-        """Parse proxy details from the raw text line.
-
-        The text line could be in one of the following formats:
-        * host:port
-        * host:port:username:password
-        """
-        line = line.strip()
-        match = RE_SIMPLE_PROXY.search(line)
-        if match:
-            return match.group(1), int(match.group(2)), None, None
-
-        match = RE_AUTH_PROXY.search(line)
-        if match:
-            host, port, user, pwd = match.groups()
-            return host, int(port), user, pwd
-
-        raise InvalidProxyLine("Invalid proxy line: %s" % line)
-
-    def parse_raw_list_data(
-        self,
-        data: str,
-        proxy_type: None | str,
-        proxy_auth: None | tuple[str, str] = None,
-    ) -> Iterator[ProxyServer]:
-        """Iterate over proxy servers found in the raw data."""
-        for orig_line in data.splitlines():
-            line = orig_line.strip().replace(" ", "")
-            if line and not line.startswith("#"):
-                try:
-                    host, port, username, password = self.parse_proxy_line(line)
-                except InvalidProxyLine as ex:
-                    logger.error(ex)
-                else:
-                    if username is None and proxy_auth:
-                        username, password = proxy_auth
-                    yield ProxyServer(host, port, username, password, proxy_type)
-
     def load(self) -> list[ProxyServer]:
         return list(
-            self.parse_raw_list_data(
+            self.parser.parse_raw_list_data(
                 self.load_raw_data(),
                 proxy_type=self._default_proxy_type,
                 proxy_auth=self._default_proxy_auth,
@@ -98,18 +62,19 @@ class WebProxySource(BaseProxySource):
         super().__init__(**kwargs)
 
     def load_raw_data(self) -> str:
-        limit = 3
-        for ntry in range(limit):
+        recent_err = None
+        for _ in range(3):
             try:
                 with urlopen(self.url, timeout=3) as inp:  # nosec B310
                     return cast(IO[bytes], inp).read().decode("utf-8", "ignore")
-            except URLError:
-                if ntry >= (limit - 1):
-                    raise
+            except (HTTPException, URLError) as ex:
+                recent_err = ex
                 logger.debug(
                     "Failed to retrieve proxy list from %s. Retrying.", self.url
                 )
-        raise Exception("Could not happen")
+        raise ProxySourceReadError(
+            "Could not load data from {}".format(self.url)
+        ) from recent_err
 
 
 class ListProxySource(BaseProxySource):

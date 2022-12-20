@@ -1,4 +1,4 @@
-from .main import ProxyList
+from .proxylist import ProxyList
 from .server import ProxyServer
 from .source import FileProxySource, ListProxySource, WebProxySource
 

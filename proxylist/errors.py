@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = ["ProxyListError", "InvalidProxyLine"]
+__all__ = ["ProxyListError", "InvalidProxyLine", "ProxySourceReadError"]
 
 
 class ProxyListError(Exception):
@@ -8,4 +8,8 @@ class ProxyListError(Exception):
 
 
 class InvalidProxyLine(ProxyListError):
+    pass
+
+
+class ProxySourceReadError(ProxyListError):
     pass

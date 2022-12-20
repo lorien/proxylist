@@ -54,7 +54,6 @@ class ProxyList:
 
     def get_next_server(self) -> ProxyServer:
         """Return next server."""
-        # pylint: disable=deprecated-typing-alias
         return next(self._servers_list_iter)
 
     def size(self) -> int:

@@ -9,5 +9,5 @@ __all__ = ["BaseProxySource"]
 
 class BaseProxySource:
     @abstractmethod
-    def get_servers_list(self) -> list[ProxyServer]:
+    def get_servers_list(self) -> list[ProxyServer]:  # pragma: no cover
         raise NotImplementedError

@@ -1,16 +1,22 @@
 *.pyc
+*.pyo
 *.swp
 *.swo
 *.orig
-*.egg-info/
 
-# setuptools
-dist/
-
-# tox
-.tox
-
-# project
-.env
+/web/settings_local.py
+pip-log.txt
+/.env
 /var/
-/docs/build/
+/dump/
+/src/
+/ioweb
+/.hg/
+/.pytest_cache/
+/build/
+/.coverage
+/.tox/
+*.egg-info
+/dist/
+/build/
+/.coverage

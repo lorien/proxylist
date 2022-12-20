@@ -5,7 +5,7 @@
 [![Type Check](https://github.com/lorien/proxylist/actions/workflows/mypy.yml/badge.svg)](https://github.com/lorien/proxylist/actions/workflows/mypy.yml)
 [![Test Coverage Status](https://coveralls.io/repos/github/lorien/proxylist/badge.svg)](https://coveralls.io/github/lorien/proxylist)
 [![Pypi Downloads](https://img.shields.io/pypi/dw/proxylist?label=Downloads)](https://pypistats.org/packages/proxylist)
-[![Documentation Status](https://readthedocs.org/projects/proxylist/badge/?version=latest)](http://user-agent.readthedocs.org)
+[![Documentation Status](https://readthedocs.org/projects/proxylist/badge/?version=latest)](http://proxylist.readthedocs.org)
 
 The proxylist package provides function and classes for:
 

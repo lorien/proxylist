@@ -1,5 +1,4 @@
-from proxylist.base import Proxy, ProxyList
-from proxylist.errors import InvalidProxyLine, ProxyListError
+from .main import ProxyList
 
-__all__ = ["ProxyList", "ProxyListError", "InvalidProxyLine"]
+__all__ = ["ProxyList"]
 __version__ = "0.1.4"

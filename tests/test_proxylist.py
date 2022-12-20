@@ -5,6 +5,7 @@ from unittest import TestCase
 from test_server import Response, TestServer
 
 from proxylist import ProxyList
+from proxylist.main import ListProxySource
 
 DEFAULT_PROXY_LIST_DATA = b"""
 '1.1.1.1:8080
@@ -34,32 +35,29 @@ class ProxyListTestCase(TestCase):
             out.write(data)
         return path
 
-    def test_basic(self) -> None:
-        pl = ProxyList()
-        self.assertEqual(0, pl.size())
+    def test_constructor(self) -> None:
+        pl = ProxyList(ListProxySource(["foo:88"]))
+        self.assertEqual(pl.size(), 1)
 
     def test_file_proxy_source(self) -> None:
-        pl = ProxyList()
         path = self.generate_plist_file(DEFAULT_PROXY_LIST_DATA)
         try:
-            pl.load_file(path)
+            pl = ProxyList.create_from_file(path)
             self.assertEqual(2, pl.size())
         finally:
             os.unlink(path)
 
     def test_web_proxy_source(self) -> None:
-        pl = ProxyList()
         self.server.add_response(Response(data=DEFAULT_PROXY_LIST_DATA))
-        pl.load_url(self.server.get_url())
+        pl = ProxyList.create_from_url(self.server.get_url())
         self.assertEqual(2, pl.size())
 
-    def test_get_next_proxy(self) -> None:
-        pl = ProxyList()
+    def test_get_next_server(self) -> None:
         path = self.generate_plist_file(b"foo:1\nbar:1")
-        pl.load_file(path)
-        self.assertEqual(pl.get_next_proxy().host, "foo")
-        self.assertEqual(pl.get_next_proxy().host, "bar")
-        self.assertEqual(pl.get_next_proxy().host, "foo")
-        pl.load_file(path)
-        self.assertEqual(pl.get_next_proxy().host, "foo")
+        pl = ProxyList.create_from_file(path)
+        self.assertEqual(pl.get_next_server().host, "foo")
+        self.assertEqual(pl.get_next_server().host, "bar")
+        self.assertEqual(pl.get_next_server().host, "foo")
+        pl = ProxyList.create_from_file(path)
+        self.assertEqual(pl.get_next_server().host, "foo")
         os.unlink(path)

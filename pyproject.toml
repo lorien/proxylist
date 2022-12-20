@@ -1,6 +1,6 @@
 [project]
 name = "proxylist"
-version = "0.1.4"
+version = "0.2.0"
 
 description = "Package to manage list of proxy servers"
 readme = "README.md"

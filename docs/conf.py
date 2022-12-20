@@ -2,7 +2,7 @@ html_theme = "sphinx_rtd_theme"
 project = "proxylist"
 copyright = "2015-2023, Gregory Petukhov"
 author = "Gregory Petukhov"
-release = "0.1.4"
+release = "0.2.0"
 extensions = [
     "myst_nb",
     "autoapi.extension",
